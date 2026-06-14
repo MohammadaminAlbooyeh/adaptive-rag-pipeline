@@ -1,0 +1,157 @@
+.query-page {
+  min-height: 100vh;
+  padding: 40px 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.query-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  background: white;
+  border-radius: 12px;
+  padding: 40px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.query-page h1 {
+  color: #333;
+  font-size: 2.5em;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.subtitle {
+  color: #666;
+  font-size: 1.1em;
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.error-message {
+  background: #fee;
+  border-left: 4px solid #f44;
+  color: #c33;
+  padding: 15px;
+  border-radius: 4px;
+  margin: 20px 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.results-container {
+  margin-top: 40px;
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.results-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid #eee;
+}
+
+.results-header h2 {
+  color: #333;
+  margin: 0;
+}
+
+.result-meta {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+
+.latency {
+  color: #666;
+  font-weight: 500;
+}
+
+.results-grid {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 30px;
+  margin-top: 30px;
+}
+
+.results-main > div {
+  margin-bottom: 25px;
+}
+
+.results-sidebar {
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+  height: fit-content;
+  position: sticky;
+  top: 20px;
+}
+
+.history-preview {
+  margin-top: 40px;
+  padding-top: 30px;
+  border-top: 2px solid #eee;
+}
+
+.history-preview h3 {
+  color: #333;
+  margin-bottom: 15px;
+}
+
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.history-item {
+  padding: 12px;
+  background: #f8f9fa;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-left: 3px solid #667eea;
+}
+
+.history-item:hover {
+  background: #eef0f7;
+  transform: translateX(5px);
+}
+
+.history-query {
+  color: #333;
+  font-weight: 500;
+  margin-bottom: 5px;
+}
+
+.history-strategy {
+  color: #999;
+  font-size: 0.9em;
+}
+
+@media (max-width: 768px) {
+  .query-container {
+    padding: 20px;
+  }
+
+  .results-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .results-sidebar {
+    position: static;
+  }
+}
