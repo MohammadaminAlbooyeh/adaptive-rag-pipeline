@@ -1,11 +1,15 @@
 import pytest
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, MagicMock
 
 
 class TestAdaptiveWorkflow:
     @pytest.mark.asyncio
-    async def test_workflow_initializes_with_dependencies(self, mock_llm, mock_vector_store):
-        from backend.adaptive_rag.langgraph_workflows.adaptive_workflow import AdaptiveWorkflow
+    async def test_workflow_initializes_with_dependencies(
+        self, mock_llm, mock_vector_store
+    ):
+        from backend.adaptive_rag.langgraph_workflows.adaptive_workflow import (
+            AdaptiveWorkflow,
+        )
 
         workflow = AdaptiveWorkflow(mock_llm, mock_vector_store)
         assert workflow.llm is mock_llm
@@ -15,7 +19,9 @@ class TestAdaptiveWorkflow:
 
     @pytest.mark.asyncio
     async def test_classify_query_node(self, mock_llm, mock_vector_store):
-        from backend.adaptive_rag.langgraph_workflows.adaptive_workflow import AdaptiveWorkflow
+        from backend.adaptive_rag.langgraph_workflows.adaptive_workflow import (
+            AdaptiveWorkflow,
+        )
 
         workflow = AdaptiveWorkflow(mock_llm, mock_vector_store)
         state = {
@@ -37,7 +43,9 @@ class TestAdaptiveWorkflow:
 
     @pytest.mark.asyncio
     async def test_route_query_node(self, mock_llm, mock_vector_store):
-        from backend.adaptive_rag.langgraph_workflows.adaptive_workflow import AdaptiveWorkflow
+        from backend.adaptive_rag.langgraph_workflows.adaptive_workflow import (
+            AdaptiveWorkflow,
+        )
 
         workflow = AdaptiveWorkflow(mock_llm, mock_vector_store)
         state = {"strategy": "document_rag", "query": "What is Python?"}
@@ -46,7 +54,9 @@ class TestAdaptiveWorkflow:
 
     @pytest.mark.asyncio
     async def test_retrieve_documents_node(self, mock_llm, mock_vector_store):
-        from backend.adaptive_rag.langgraph_workflows.adaptive_workflow import AdaptiveWorkflow
+        from backend.adaptive_rag.langgraph_workflows.adaptive_workflow import (
+            AdaptiveWorkflow,
+        )
 
         workflow = AdaptiveWorkflow(mock_llm, mock_vector_store)
         workflow.vector_retriever.retrieve = AsyncMock(
@@ -70,8 +80,12 @@ class TestAdaptiveWorkflow:
         assert len(result["documents"]) > 0
 
     @pytest.mark.asyncio
-    async def test_retrieve_documents_respects_max_iterations(self, mock_llm, mock_vector_store):
-        from backend.adaptive_rag.langgraph_workflows.adaptive_workflow import AdaptiveWorkflow
+    async def test_retrieve_documents_respects_max_iterations(
+        self, mock_llm, mock_vector_store
+    ):
+        from backend.adaptive_rag.langgraph_workflows.adaptive_workflow import (
+            AdaptiveWorkflow,
+        )
 
         workflow = AdaptiveWorkflow(mock_llm, mock_vector_store)
         state = {
@@ -91,7 +105,9 @@ class TestAdaptiveWorkflow:
 
     @pytest.mark.asyncio
     async def test_grade_documents_relevant(self, mock_llm, mock_vector_store):
-        from backend.adaptive_rag.langgraph_workflows.adaptive_workflow import AdaptiveWorkflow
+        from backend.adaptive_rag.langgraph_workflows.adaptive_workflow import (
+            AdaptiveWorkflow,
+        )
 
         workflow = AdaptiveWorkflow(mock_llm, mock_vector_store)
         workflow.relevance_grader.grade = AsyncMock(
@@ -115,11 +131,17 @@ class TestAdaptiveWorkflow:
 
     @pytest.mark.asyncio
     async def test_grade_documents_not_relevant(self, mock_llm, mock_vector_store):
-        from backend.adaptive_rag.langgraph_workflows.adaptive_workflow import AdaptiveWorkflow
+        from backend.adaptive_rag.langgraph_workflows.adaptive_workflow import (
+            AdaptiveWorkflow,
+        )
 
         workflow = AdaptiveWorkflow(mock_llm, mock_vector_store)
         workflow.relevance_grader.grade = AsyncMock(
-            return_value={"score": 0.1, "is_relevant": False, "explanation": "Not relevant"}
+            return_value={
+                "score": 0.1,
+                "is_relevant": False,
+                "explanation": "Not relevant",
+            }
         )
 
         state = {
@@ -139,7 +161,9 @@ class TestAdaptiveWorkflow:
 
     @pytest.mark.asyncio
     async def test_grade_documents_empty_list(self, mock_llm, mock_vector_store):
-        from backend.adaptive_rag.langgraph_workflows.adaptive_workflow import AdaptiveWorkflow
+        from backend.adaptive_rag.langgraph_workflows.adaptive_workflow import (
+            AdaptiveWorkflow,
+        )
 
         workflow = AdaptiveWorkflow(mock_llm, mock_vector_store)
         state = {
@@ -159,7 +183,9 @@ class TestAdaptiveWorkflow:
 
     @pytest.mark.asyncio
     async def test_generate_answer(self, mock_llm, mock_vector_store):
-        from backend.adaptive_rag.langgraph_workflows.adaptive_workflow import AdaptiveWorkflow
+        from backend.adaptive_rag.langgraph_workflows.adaptive_workflow import (
+            AdaptiveWorkflow,
+        )
 
         workflow = AdaptiveWorkflow(mock_llm, mock_vector_store)
         mock_llm.generate = AsyncMock(return_value="Python is a programming language.")
@@ -183,7 +209,9 @@ class TestAdaptiveWorkflow:
 
     @pytest.mark.asyncio
     async def test_generate_answer_with_web_results(self, mock_llm, mock_vector_store):
-        from backend.adaptive_rag.langgraph_workflows.adaptive_workflow import AdaptiveWorkflow
+        from backend.adaptive_rag.langgraph_workflows.adaptive_workflow import (
+            AdaptiveWorkflow,
+        )
 
         workflow = AdaptiveWorkflow(mock_llm, mock_vector_store)
         state = {
@@ -203,7 +231,9 @@ class TestAdaptiveWorkflow:
 
     @pytest.mark.asyncio
     async def test_grade_answer_good(self, mock_llm, mock_vector_store):
-        from backend.adaptive_rag.langgraph_workflows.adaptive_workflow import AdaptiveWorkflow
+        from backend.adaptive_rag.langgraph_workflows.adaptive_workflow import (
+            AdaptiveWorkflow,
+        )
 
         workflow = AdaptiveWorkflow(mock_llm, mock_vector_store)
         workflow.hallucination_grader.grade = AsyncMock(
@@ -230,7 +260,9 @@ class TestAdaptiveWorkflow:
 
     @pytest.mark.asyncio
     async def test_grade_answer_hallucination(self, mock_llm, mock_vector_store):
-        from backend.adaptive_rag.langgraph_workflows.adaptive_workflow import AdaptiveWorkflow
+        from backend.adaptive_rag.langgraph_workflows.adaptive_workflow import (
+            AdaptiveWorkflow,
+        )
 
         workflow = AdaptiveWorkflow(mock_llm, mock_vector_store)
         workflow.hallucination_grader.grade = AsyncMock(
@@ -254,7 +286,9 @@ class TestAdaptiveWorkflow:
 
     @pytest.mark.asyncio
     async def test_grade_answer_not_useful(self, mock_llm, mock_vector_store):
-        from backend.adaptive_rag.langgraph_workflows.adaptive_workflow import AdaptiveWorkflow
+        from backend.adaptive_rag.langgraph_workflows.adaptive_workflow import (
+            AdaptiveWorkflow,
+        )
 
         workflow = AdaptiveWorkflow(mock_llm, mock_vector_store)
         workflow.hallucination_grader.grade = AsyncMock(
@@ -281,12 +315,13 @@ class TestAdaptiveWorkflow:
 
     @pytest.mark.asyncio
     async def test_rewrite_query(self, mock_llm, mock_vector_store):
-        from backend.adaptive_rag.langgraph_workflows.adaptive_workflow import AdaptiveWorkflow
+        from backend.adaptive_rag.langgraph_workflows.adaptive_workflow import (
+            AdaptiveWorkflow,
+        )
 
         workflow = AdaptiveWorkflow(mock_llm, mock_vector_store)
-        # Mock query_rewriter to return a string (sync mock, since the workflow
-        # code calls it without await due to a bug in the production code)
-        workflow.query_rewriter.rewrite = MagicMock(return_value="What is Python?")
+        # Mock query_rewriter to return a rewritten query
+        workflow.query_rewriter.rewrite = AsyncMock(return_value="What is Python?")
         state = {
             "query": "What is Python?",
             "generation_count": 0,
@@ -306,11 +341,15 @@ class TestAdaptiveWorkflow:
 
     @pytest.mark.asyncio
     async def test_web_search_node(self, mock_llm, mock_vector_store):
-        from backend.adaptive_rag.langgraph_workflows.adaptive_workflow import AdaptiveWorkflow
+        from backend.adaptive_rag.langgraph_workflows.adaptive_workflow import (
+            AdaptiveWorkflow,
+        )
 
         workflow = AdaptiveWorkflow(mock_llm, mock_vector_store)
         workflow.web_retriever.retrieve = AsyncMock(
-            return_value=[{"content": "Python is popular.", "source": "web", "title": "Python"}]
+            return_value=[
+                {"content": "Python is popular.", "source": "web", "title": "Python"}
+            ]
         )
 
         state = {
@@ -331,37 +370,53 @@ class TestAdaptiveWorkflow:
         assert result["web_search_count"] == 1
 
     def test_decide_route_returns_simple(self, mock_llm, mock_vector_store):
-        from backend.adaptive_rag.langgraph_workflows.adaptive_workflow import AdaptiveWorkflow
+        from backend.adaptive_rag.langgraph_workflows.adaptive_workflow import (
+            AdaptiveWorkflow,
+        )
 
         workflow = AdaptiveWorkflow(mock_llm, mock_vector_store)
         assert workflow._decide_route({}) == "simple"
 
     def test_decide_grade_respects_max_iterations(self, mock_llm, mock_vector_store):
-        from backend.adaptive_rag.langgraph_workflows.adaptive_workflow import AdaptiveWorkflow
+        from backend.adaptive_rag.langgraph_workflows.adaptive_workflow import (
+            AdaptiveWorkflow,
+        )
 
         workflow = AdaptiveWorkflow(mock_llm, mock_vector_store)
         state = {"generation_count": 3, "grade": "not_relevant"}
         assert workflow._decide_grade(state) == "relevant"
 
     def test_decide_grade_returns_state_grade(self, mock_llm, mock_vector_store):
-        from backend.adaptive_rag.langgraph_workflows.adaptive_workflow import AdaptiveWorkflow
+        from backend.adaptive_rag.langgraph_workflows.adaptive_workflow import (
+            AdaptiveWorkflow,
+        )
 
         workflow = AdaptiveWorkflow(mock_llm, mock_vector_store)
         state = {"generation_count": 0, "grade": "relevant"}
         assert workflow._decide_grade(state) == "relevant"
 
     def test_decide_answer_quality(self, mock_llm, mock_vector_store):
-        from backend.adaptive_rag.langgraph_workflows.adaptive_workflow import AdaptiveWorkflow
+        from backend.adaptive_rag.langgraph_workflows.adaptive_workflow import (
+            AdaptiveWorkflow,
+        )
 
         workflow = AdaptiveWorkflow(mock_llm, mock_vector_store)
         assert workflow._decide_answer_quality({"answer_quality": "good"}) == "good"
-        assert workflow._decide_answer_quality({"answer_quality": "hallucination"}) == "hallucination"
-        assert workflow._decide_answer_quality({"answer_quality": "not_useful"}) == "not_useful"
+        assert (
+            workflow._decide_answer_quality({"answer_quality": "hallucination"})
+            == "hallucination"
+        )
+        assert (
+            workflow._decide_answer_quality({"answer_quality": "not_useful"})
+            == "not_useful"
+        )
         assert workflow._decide_answer_quality({}) == "good"
 
     @pytest.mark.asyncio
     async def test_run_returns_formatted_result(self, mock_llm, mock_vector_store):
-        from backend.adaptive_rag.langgraph_workflows.adaptive_workflow import AdaptiveWorkflow
+        from backend.adaptive_rag.langgraph_workflows.adaptive_workflow import (
+            AdaptiveWorkflow,
+        )
 
         workflow = AdaptiveWorkflow(mock_llm, mock_vector_store)
         mock_llm.generate = AsyncMock(return_value="Python is a programming language.")
@@ -372,7 +427,9 @@ class TestAdaptiveWorkflow:
                 "query": "What is Python?",
                 "query_type": "factual",
                 "strategy": "document_rag",
-                "documents": [{"content": "Python is a language.", "source": "doc.pdf"}],
+                "documents": [
+                    {"content": "Python is a language.", "source": "doc.pdf"}
+                ],
                 "web_results": [],
                 "answer": "Python is a programming language.",
                 "grade": "relevant",

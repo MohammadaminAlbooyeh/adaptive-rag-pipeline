@@ -6,7 +6,7 @@ class CSVLoader:
     def load(self, file_obj) -> str:
         try:
             if isinstance(file_obj, io.BytesIO):
-                content = file_obj.read().decode('utf-8')
+                content = file_obj.read().decode("utf-8")
                 file_obj = io.StringIO(content)
 
             reader = csv.reader(file_obj)

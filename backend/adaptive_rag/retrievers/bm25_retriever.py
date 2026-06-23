@@ -12,7 +12,9 @@ class BM25Retriever(BaseRetriever):
             self._initialize_bm25()
 
     def _initialize_bm25(self):
-        self._tokenized_corpus = [doc.get("content", "").split() for doc in self.documents]
+        self._tokenized_corpus = [
+            doc.get("content", "").split() for doc in self.documents
+        ]
         self._bm25 = BM25Okapi(self._tokenized_corpus)
 
     def update_documents(self, documents: List[dict]):
@@ -25,7 +27,9 @@ class BM25Retriever(BaseRetriever):
 
         tokenized_query = query.split()
         scores = self._bm25.get_scores(tokenized_query)
-        top_indices = sorted(range(len(scores)), key=lambda i: scores[i], reverse=True)[:top_k]
+        top_indices = sorted(range(len(scores)), key=lambda i: scores[i], reverse=True)[
+            :top_k
+        ]
 
         results = []
         for idx in top_indices:

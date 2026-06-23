@@ -1,10 +1,12 @@
 import pytest
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, MagicMock
 
 
 class TestEndToEnd:
     @pytest.mark.asyncio
-    async def test_query_classification_routes_to_correct_strategy(self, adaptive_rag_service):
+    async def test_query_classification_routes_to_correct_strategy(
+        self, adaptive_rag_service
+    ):
         result = await adaptive_rag_service.process_query("What is Python?")
         assert "strategy" in result
         assert result["strategy"] in ("document_rag", "direct_llm")
@@ -60,7 +62,6 @@ class TestEndToEnd:
 
     @pytest.mark.asyncio
     async def test_full_pipeline_with_mock_service(self):
-        from backend.services.adaptive_rag_service import AdaptiveRAGService
         from backend.adaptive_rag.router.query_classifier import QueryClassifier
         from backend.adaptive_rag.router.strategy_selector import StrategySelector
 
@@ -129,26 +130,30 @@ class TestEndToEnd:
 
         scorer = ConfidenceScorer()
 
-        score_no_sources = scorer.score({
-            "strategy": "direct_llm",
-            "answer": "Python is a language.",
-            "sources": [],
-            "documents": [],
-        })
+        score_no_sources = scorer.score(
+            {
+                "strategy": "direct_llm",
+                "answer": "Python is a language.",
+                "sources": [],
+                "documents": [],
+            }
+        )
         assert score_no_sources == 0.95
 
-        score_with_sources = scorer.score({
-            "strategy": "document_rag",
-            "answer": "Python is a language.",
-            "sources": [
-                {"content": "Python info", "source": "doc1.pdf"},
-                {"content": "More info", "source": "doc2.pdf"},
-            ],
-            "documents": [
-                {"content": "Python info"},
-                {"content": "More info"},
-            ],
-        })
+        score_with_sources = scorer.score(
+            {
+                "strategy": "document_rag",
+                "answer": "Python is a language.",
+                "sources": [
+                    {"content": "Python info", "source": "doc1.pdf"},
+                    {"content": "More info", "source": "doc2.pdf"},
+                ],
+                "documents": [
+                    {"content": "Python info"},
+                    {"content": "More info"},
+                ],
+            }
+        )
         assert score_with_sources > 0.85
 
     def test_confidence_levels(self):

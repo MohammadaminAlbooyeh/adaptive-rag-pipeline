@@ -1,4 +1,4 @@
-from typing import Dict, Any, TypedDict, Optional
+from typing import Dict, Any, TypedDict
 from langgraph.graph import StateGraph, END
 from backend.adaptive_rag.router.query_classifier import QueryClassifier
 from backend.adaptive_rag.router.strategy_selector import StrategySelector
@@ -72,7 +72,11 @@ class AdaptiveWorkflow:
         workflow.add_conditional_edges(
             "grade_answer",
             self._decide_answer_quality,
-            {"good": END, "hallucination": "generate_answer", "not_useful": "web_search"},
+            {
+                "good": END,
+                "hallucination": "generate_answer",
+                "not_useful": "web_search",
+            },
         )
         workflow.add_edge("rewrite_query", "retrieve_documents")
         workflow.add_edge("web_search", "generate_answer")
@@ -134,8 +138,16 @@ class AdaptiveWorkflow:
         all_docs = documents + web_results
         context = self.context_builder.build(all_docs)
 
-        hallucination_result = await self.hallucination_grader.grade(answer, context) if context else {"is_grounded": True}
-        quality_result = await self.answer_grader.grade(answer, context) if context else {"quality_score": 1.0, "answers_query": True}
+        hallucination_result = (
+            await self.hallucination_grader.grade(answer, context)
+            if context
+            else {"is_grounded": True}
+        )
+        quality_result = (
+            await self.answer_grader.grade(answer, context)
+            if context
+            else {"quality_score": 1.0, "answers_query": True}
+        )
 
         if not hallucination_result.get("is_grounded", True):
             return {"answer_quality": "hallucination"}
@@ -149,8 +161,12 @@ class AdaptiveWorkflow:
             return {"query": state["query"]}
 
         feedback = "Documents were not relevant to the query."
-        rewritten = self.query_rewriter.rewrite(state["query"], feedback)
-        rewritten = rewritten if rewritten and rewritten != state["query"] else state["query"] + " (refined)"
+        rewritten = await self.query_rewriter.rewrite(state["query"], feedback)
+        rewritten = (
+            rewritten
+            if rewritten and rewritten != state["query"]
+            else state["query"] + " (refined)"
+        )
         return {"query": rewritten}
 
     async def _web_search(self, state: WorkflowState) -> Dict[str, Any]:
@@ -174,21 +190,25 @@ class AdaptiveWorkflow:
         return state.get("answer_quality", "good")
 
     async def run(self, query: str) -> Dict[str, Any]:
-        result = await self.workflow.ainvoke({
-            "query": query,
-            "query_type": "",
-            "strategy": "",
-            "documents": [],
-            "web_results": [],
-            "answer": "",
-            "grade": "",
-            "answer_quality": "",
-            "generation_count": 0,
-            "web_search_count": 0,
-        })
+        result = await self.workflow.ainvoke(
+            {
+                "query": query,
+                "query_type": "",
+                "strategy": "",
+                "documents": [],
+                "web_results": [],
+                "answer": "",
+                "grade": "",
+                "answer_quality": "",
+                "generation_count": 0,
+                "web_search_count": 0,
+            }
+        )
         formatted = self.response_formatter.format(
             answer=result.get("answer", ""),
-            sources=[doc.get("source", "unknown") for doc in result.get("documents", [])],
+            sources=[
+                doc.get("source", "unknown") for doc in result.get("documents", [])
+            ],
             metadata={
                 "strategy": result.get("strategy", ""),
                 "query_type": result.get("query_type", ""),

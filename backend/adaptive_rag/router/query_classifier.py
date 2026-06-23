@@ -12,13 +12,51 @@ class ClassificationResult(BaseModel):
 
 class QueryClassifier:
     def __init__(self):
-        self.keywords_factual = {"what", "when", "where", "who", "which", "how many", "define"}
+        self.keywords_factual = {
+            "what",
+            "when",
+            "where",
+            "who",
+            "which",
+            "how many",
+            "define",
+        }
         self.keywords_exploratory = {"why", "explain", "describe", "tell me about"}
-        self.keywords_comparative = {"compare", "versus", "vs", "difference", "different", "better", "worse"}
+        self.keywords_comparative = {
+            "compare",
+            "versus",
+            "vs",
+            "difference",
+            "different",
+            "better",
+            "worse",
+        }
         self.keywords_procedural = {"how", "steps", "instructions", "guide", "process"}
-        self.keywords_opinion = {"think", "believe", "should", "recommend", "best", "worst"}
-        self.keywords_temporal = {"today", "yesterday", "latest", "recent", "now", "current", "breaking", "news"}
-        self.keywords_graph = {"relationship", "connected", "associated", "entity", "entities"}
+        self.keywords_opinion = {
+            "think",
+            "believe",
+            "should",
+            "recommend",
+            "best",
+            "worst",
+        }
+        self.keywords_temporal = {
+            "today",
+            "yesterday",
+            "latest",
+            "recent",
+            "now",
+            "current",
+            "breaking",
+            "news",
+        }
+        self.keywords_graph = {
+            "relationship",
+            "connected",
+            "associated",
+            "entity",
+            "entities",
+        }
 
     def classify(self, query: str) -> ClassificationResult:
         query_lower = query.lower()

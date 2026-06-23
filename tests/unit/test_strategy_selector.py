@@ -1,4 +1,3 @@
-import pytest
 from backend.adaptive_rag.router.query_classifier import ClassificationResult
 
 
@@ -22,35 +21,51 @@ def _make_classification(
 
 class TestStrategySelector:
     def test_select_direct_llm(self, strategy_selector):
-        classification = _make_classification(needs_docs=False, needs_web=False, needs_graph=False)
+        classification = _make_classification(
+            needs_docs=False, needs_web=False, needs_graph=False
+        )
         assert strategy_selector.select(classification) == "direct_llm"
 
     def test_select_document_rag(self, strategy_selector):
-        classification = _make_classification(needs_docs=True, needs_web=False, needs_graph=False)
+        classification = _make_classification(
+            needs_docs=True, needs_web=False, needs_graph=False
+        )
         assert strategy_selector.select(classification) == "document_rag"
 
     def test_select_web_search_rag(self, strategy_selector):
-        classification = _make_classification(needs_docs=False, needs_web=True, needs_graph=False)
+        classification = _make_classification(
+            needs_docs=False, needs_web=True, needs_graph=False
+        )
         assert strategy_selector.select(classification) == "web_search_rag"
 
     def test_select_hybrid_rag(self, strategy_selector):
-        classification = _make_classification(needs_docs=True, needs_web=True, needs_graph=False)
+        classification = _make_classification(
+            needs_docs=True, needs_web=True, needs_graph=False
+        )
         assert strategy_selector.select(classification) == "hybrid_rag"
 
     def test_select_graph_rag_only(self, strategy_selector):
-        classification = _make_classification(needs_docs=False, needs_web=False, needs_graph=True)
+        classification = _make_classification(
+            needs_docs=False, needs_web=False, needs_graph=True
+        )
         assert strategy_selector.select(classification) == "graph_rag"
 
     def test_select_graph_with_docs(self, strategy_selector):
-        classification = _make_classification(needs_docs=True, needs_web=False, needs_graph=True)
+        classification = _make_classification(
+            needs_docs=True, needs_web=False, needs_graph=True
+        )
         assert strategy_selector.select(classification) == "document_rag"
 
     def test_select_graph_with_web(self, strategy_selector):
-        classification = _make_classification(needs_docs=False, needs_web=True, needs_graph=True)
+        classification = _make_classification(
+            needs_docs=False, needs_web=True, needs_graph=True
+        )
         assert strategy_selector.select(classification) == "web_search_rag"
 
     def test_select_graph_with_docs_and_web(self, strategy_selector):
-        classification = _make_classification(needs_docs=True, needs_web=True, needs_graph=True)
+        classification = _make_classification(
+            needs_docs=True, needs_web=True, needs_graph=True
+        )
         assert strategy_selector.select(classification) == "hybrid_rag"
 
     def test_select_factual_query(self, strategy_selector, query_classifier):
@@ -70,17 +85,25 @@ class TestStrategySelector:
         assert strategy_selector.select(classification) == "direct_llm"
 
     def test_select_all_flags_false(self, strategy_selector):
-        classification = _make_classification(needs_docs=False, needs_web=False, needs_graph=False)
+        classification = _make_classification(
+            needs_docs=False, needs_web=False, needs_graph=False
+        )
         assert strategy_selector.select(classification) == "direct_llm"
 
     def test_select_document_rag_docs_only(self, strategy_selector):
-        classification = _make_classification(needs_docs=True, needs_web=False, needs_graph=False)
+        classification = _make_classification(
+            needs_docs=True, needs_web=False, needs_graph=False
+        )
         assert strategy_selector.select(classification) == "document_rag"
 
     def test_select_web_only(self, strategy_selector):
-        classification = _make_classification(needs_docs=False, needs_web=True, needs_graph=False)
+        classification = _make_classification(
+            needs_docs=False, needs_web=True, needs_graph=False
+        )
         assert strategy_selector.select(classification) == "web_search_rag"
 
     def test_select_hybrid_docs_and_web(self, strategy_selector):
-        classification = _make_classification(needs_docs=True, needs_web=True, needs_graph=False)
+        classification = _make_classification(
+            needs_docs=True, needs_web=True, needs_graph=False
+        )
         assert strategy_selector.select(classification) == "hybrid_rag"

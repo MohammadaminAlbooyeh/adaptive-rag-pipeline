@@ -36,7 +36,7 @@ class HybridStrategy(BaseStrategy):
                 {
                     "content": result.get("content", "")[:100],
                     "source": result.get("source", "Unknown"),
-                    "score": result.get("relevance_score", 0)
+                    "score": result.get("relevance_score", 0),
                 }
                 for result in all_results[:5]
             ]

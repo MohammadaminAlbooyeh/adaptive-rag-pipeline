@@ -1,5 +1,5 @@
 import pytest
-from unittest.mock import AsyncMock, MagicMock
+from unittest.mock import AsyncMock
 
 
 class TestRelevanceGrader:
@@ -8,7 +8,9 @@ class TestRelevanceGrader:
         from backend.adaptive_rag.graders.relevance_grader import RelevanceGrader
 
         grader = RelevanceGrader()
-        result = await grader.grade("Python is a programming language.", "What is Python?")
+        result = await grader.grade(
+            "Python is a programming language.", "What is Python?"
+        )
         assert isinstance(result, dict)
         assert "score" in result
         assert "is_relevant" in result
@@ -28,7 +30,9 @@ class TestRelevanceGrader:
         from backend.adaptive_rag.graders.relevance_grader import RelevanceGrader
 
         grader = RelevanceGrader()
-        result = await grader.grade("The sky is blue and clouds are white.", "What is Python?")
+        result = await grader.grade(
+            "The sky is blue and clouds are white.", "What is Python?"
+        )
         assert result["is_relevant"] is False
         assert result["score"] < 0.5
 
@@ -69,7 +73,9 @@ class TestRelevanceGrader:
         from backend.adaptive_rag.graders.relevance_grader import RelevanceGrader
 
         grader = RelevanceGrader()
-        result = await grader.grade("Python programming Java development", "Python Java")
+        result = await grader.grade(
+            "Python programming Java development", "Python Java"
+        )
         assert 0.0 < result["score"] <= 1.0
 
     @pytest.mark.asyncio
@@ -92,17 +98,23 @@ class TestRelevanceGrader:
 class TestHallucinationGrader:
     @pytest.mark.asyncio
     async def test_grade_without_llm_returns_dict(self):
-        from backend.adaptive_rag.graders.hallucination_grader import HallucinationGrader
+        from backend.adaptive_rag.graders.hallucination_grader import (
+            HallucinationGrader,
+        )
 
         grader = HallucinationGrader()
-        result = await grader.grade("Python is a language.", "Python is a programming language.")
+        result = await grader.grade(
+            "Python is a language.", "Python is a programming language."
+        )
         assert isinstance(result, dict)
         assert "is_grounded" in result
         assert "score" in result
 
     @pytest.mark.asyncio
     async def test_grade_without_llm_grounded(self):
-        from backend.adaptive_rag.graders.hallucination_grader import HallucinationGrader
+        from backend.adaptive_rag.graders.hallucination_grader import (
+            HallucinationGrader,
+        )
 
         grader = HallucinationGrader()
         result = await grader.grade("Python is a language.", "Python is a language")
@@ -111,15 +123,21 @@ class TestHallucinationGrader:
 
     @pytest.mark.asyncio
     async def test_grade_without_llm_not_grounded(self):
-        from backend.adaptive_rag.graders.hallucination_grader import HallucinationGrader
+        from backend.adaptive_rag.graders.hallucination_grader import (
+            HallucinationGrader,
+        )
 
         grader = HallucinationGrader()
-        result = await grader.grade("Rustans are mythical creatures.", "Python is a programming language.")
+        result = await grader.grade(
+            "Rustans are mythical creatures.", "Python is a programming language."
+        )
         assert result["is_grounded"] is False
 
     @pytest.mark.asyncio
     async def test_grade_with_empty_context(self):
-        from backend.adaptive_rag.graders.hallucination_grader import HallucinationGrader
+        from backend.adaptive_rag.graders.hallucination_grader import (
+            HallucinationGrader,
+        )
 
         grader = HallucinationGrader()
         result = await grader.grade("Python is a language.", "")
@@ -128,7 +146,9 @@ class TestHallucinationGrader:
 
     @pytest.mark.asyncio
     async def test_grade_with_empty_answer(self):
-        from backend.adaptive_rag.graders.hallucination_grader import HallucinationGrader
+        from backend.adaptive_rag.graders.hallucination_grader import (
+            HallucinationGrader,
+        )
 
         grader = HallucinationGrader()
         result = await grader.grade("", "Python is a programming language.")
@@ -137,7 +157,9 @@ class TestHallucinationGrader:
 
     @pytest.mark.asyncio
     async def test_grade_with_llm_not_grounded(self):
-        from backend.adaptive_rag.graders.hallucination_grader import HallucinationGrader
+        from backend.adaptive_rag.graders.hallucination_grader import (
+            HallucinationGrader,
+        )
 
         llm = AsyncMock()
         llm.detect_hallucination = AsyncMock(return_value=True)
@@ -148,7 +170,9 @@ class TestHallucinationGrader:
 
     @pytest.mark.asyncio
     async def test_grade_with_llm_grounded(self):
-        from backend.adaptive_rag.graders.hallucination_grader import HallucinationGrader
+        from backend.adaptive_rag.graders.hallucination_grader import (
+            HallucinationGrader,
+        )
 
         llm = AsyncMock()
         llm.detect_hallucination = AsyncMock(return_value=False)
@@ -164,7 +188,9 @@ class TestAnswerGrader:
         from backend.adaptive_rag.graders.answer_grader import AnswerGrader
 
         grader = AnswerGrader()
-        result = await grader.grade("Python is a programming language.", "Context about Python.")
+        result = await grader.grade(
+            "Python is a programming language.", "Context about Python."
+        )
         assert isinstance(result, dict)
         assert "quality_score" in result
         assert "answers_query" in result
@@ -177,7 +203,8 @@ class TestAnswerGrader:
         grader = AnswerGrader()
         result = await grader.grade(
             "Python is a programming language. It is used for web development and data science "
-            "because of its readability.", "Context about Python."
+            "because of its readability.",
+            "Context about Python.",
         )
         assert result["quality_score"] > 0.5
         assert result["answers_query"] is True
@@ -227,7 +254,9 @@ class TestAnswerGrader:
         from backend.adaptive_rag.graders.answer_grader import AnswerGrader
 
         grader = AnswerGrader()
-        with_punct = await grader.grade("Python is a language. It is used widely.", "ctx")
+        with_punct = await grader.grade(
+            "Python is a language. It is used widely.", "ctx"
+        )
         without_punct = await grader.grade("Python is a language", "ctx")
         assert with_punct["quality_score"] > without_punct["quality_score"]
 
@@ -237,7 +266,8 @@ class TestAnswerGrader:
 
         grader = AnswerGrader()
         with_reasoning = await grader.grade(
-            "Python is popular because it is easy to read. Therefore many use it.", "ctx"
+            "Python is popular because it is easy to read. Therefore many use it.",
+            "ctx",
         )
         without = await grader.grade("Python is popular.", "ctx")
         assert with_reasoning["quality_score"] > without["quality_score"]

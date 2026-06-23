@@ -58,11 +58,13 @@ class SelfRAGWorkflow:
         for doc in documents:
             result = await self.relevance_grader.grade(doc.get("content", ""), query)
             if not result.get("is_relevant", False):
-                reflection_notes.append(f"Document not relevant: {doc.get('content', '')[:100]}...")
+                reflection_notes.append(
+                    f"Document not relevant: {doc.get('content', '')[:100]}..."
+                )
 
         if reflection_notes:
             feedback = "; ".join(reflection_notes)
-            rewritten = self.query_rewriter.rewrite(query, feedback)
+            rewritten = await self.query_rewriter.rewrite(query, feedback)
             if rewritten and rewritten != query:
                 return {"reflection": "; ".join(reflection_notes), "query": rewritten}
             return {"reflection": "; ".join(reflection_notes)}
@@ -72,7 +74,11 @@ class SelfRAGWorkflow:
     async def _generate(self, state: SelfRAGState) -> Dict[str, Any]:
         documents = state.get("documents", [])
         context = self.context_builder.build(documents)
-        answer = await self.answer_generator.generate(state["query"], context) if context else await self.llm.generate(f"Answer: {state['query']}")
+        answer = (
+            await self.answer_generator.generate(state["query"], context)
+            if context
+            else await self.llm.generate(f"Answer: {state['query']}")
+        )
         return {"answer": answer}
 
     def _decide(self, state: SelfRAGState) -> str:
@@ -82,11 +88,13 @@ class SelfRAGWorkflow:
         return "reflect"
 
     async def run(self, query: str) -> Dict[str, Any]:
-        result = await self.workflow.ainvoke({
-            "query": query,
-            "documents": [],
-            "reflection": "",
-            "answer": "",
-            "iteration": 0,
-        })
+        result = await self.workflow.ainvoke(
+            {
+                "query": query,
+                "documents": [],
+                "reflection": "",
+                "answer": "",
+                "iteration": 0,
+            }
+        )
         return result

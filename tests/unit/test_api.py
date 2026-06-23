@@ -1,14 +1,14 @@
 import pytest
-from unittest.mock import patch, AsyncMock, MagicMock
+from unittest.mock import patch, AsyncMock
 from httpx import AsyncClient, ASGITransport
 from backend.main import app
-from backend.api.schemas import QueryRequest
 
 
 @pytest.fixture(autouse=True)
 def reset_globals():
     """Reset the global service variables in routes between tests."""
     import backend.api.routes as routes
+
     routes._rag_service = None
     routes._document_service = None
     routes._indexing_service = None
@@ -20,7 +20,9 @@ def reset_globals():
 class TestAPIHealth:
     @pytest.mark.asyncio
     async def test_health_endpoint(self):
-        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+        async with AsyncClient(
+            transport=ASGITransport(app=app), base_url="http://test"
+        ) as client:
             response = await client.get("/health")
             assert response.status_code == 200
             data = response.json()
@@ -29,7 +31,9 @@ class TestAPIHealth:
 
     @pytest.mark.asyncio
     async def test_api_v1_health(self):
-        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+        async with AsyncClient(
+            transport=ASGITransport(app=app), base_url="http://test"
+        ) as client:
             response = await client.get("/api/v1/health")
             assert response.status_code == 200
             data = response.json()
@@ -50,11 +54,14 @@ class TestAPIQuery:
             }
         )
 
-        with patch("backend.api.routes._initialize_services"), \
-             patch("backend.api.routes._rag_service", mock_service), \
-             patch("backend.api.routes._analytics_service", AsyncMock()):
-
-            async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+        with (
+            patch("backend.api.routes._initialize_services"),
+            patch("backend.api.routes._rag_service", mock_service),
+            patch("backend.api.routes._analytics_service", AsyncMock()),
+        ):
+            async with AsyncClient(
+                transport=ASGITransport(app=app), base_url="http://test"
+            ) as client:
                 response = await client.post(
                     "/api/v1/query",
                     json={"text": "What is Python?", "top_k": 5},
@@ -81,11 +88,14 @@ class TestAPIQuery:
             }
         )
 
-        with patch("backend.api.routes._initialize_services"), \
-             patch("backend.api.routes._rag_service", mock_service), \
-             patch("backend.api.routes._analytics_service", AsyncMock()):
-
-            async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+        with (
+            patch("backend.api.routes._initialize_services"),
+            patch("backend.api.routes._rag_service", mock_service),
+            patch("backend.api.routes._analytics_service", AsyncMock()),
+        ):
+            async with AsyncClient(
+                transport=ASGITransport(app=app), base_url="http://test"
+            ) as client:
                 response = await client.post(
                     "/api/v1/query",
                     json={"text": "What is Python?", "strategy": "web_search_rag"},
@@ -100,11 +110,14 @@ class TestAPIQuery:
         mock_service = AsyncMock()
         mock_service.process_query = AsyncMock(side_effect=Exception("Service error"))
 
-        with patch("backend.api.routes._initialize_services"), \
-             patch("backend.api.routes._rag_service", mock_service), \
-             patch("backend.api.routes._analytics_service", AsyncMock()):
-
-            async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+        with (
+            patch("backend.api.routes._initialize_services"),
+            patch("backend.api.routes._rag_service", mock_service),
+            patch("backend.api.routes._analytics_service", AsyncMock()),
+        ):
+            async with AsyncClient(
+                transport=ASGITransport(app=app), base_url="http://test"
+            ) as client:
                 response = await client.post(
                     "/api/v1/query",
                     json={"text": "What is Python?"},
@@ -114,14 +127,18 @@ class TestAPIQuery:
 
     @pytest.mark.asyncio
     async def test_query_endpoint_invalid_body(self):
-        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+        async with AsyncClient(
+            transport=ASGITransport(app=app), base_url="http://test"
+        ) as client:
             response = await client.post("/api/v1/query", json={})
 
         assert response.status_code == 422
 
     @pytest.mark.asyncio
     async def test_query_endpoint_empty_text(self):
-        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+        async with AsyncClient(
+            transport=ASGITransport(app=app), base_url="http://test"
+        ) as client:
             response = await client.post("/api/v1/query", json={"text": ""})
 
         assert response.status_code in (200, 422)
@@ -133,14 +150,23 @@ class TestAPIDocuments:
         mock_doc_service = AsyncMock()
         mock_doc_service.list_documents = AsyncMock(
             return_value=[
-                {"id": "1", "filename": "test.pdf", "uploaded_at": "2024-01-01", "size": 100, "status": "uploaded"}
+                {
+                    "id": "1",
+                    "filename": "test.pdf",
+                    "uploaded_at": "2024-01-01",
+                    "size": 100,
+                    "status": "uploaded",
+                }
             ]
         )
 
-        with patch("backend.api.routes._initialize_services"), \
-             patch("backend.api.routes._document_service", mock_doc_service):
-
-            async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+        with (
+            patch("backend.api.routes._initialize_services"),
+            patch("backend.api.routes._document_service", mock_doc_service),
+        ):
+            async with AsyncClient(
+                transport=ASGITransport(app=app), base_url="http://test"
+            ) as client:
                 response = await client.get("/api/v1/documents")
 
         assert response.status_code == 200
@@ -152,10 +178,13 @@ class TestAPIDocuments:
         mock_doc_service = AsyncMock()
         mock_doc_service.list_documents = AsyncMock(return_value=[])
 
-        with patch("backend.api.routes._initialize_services"), \
-             patch("backend.api.routes._document_service", mock_doc_service):
-
-            async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+        with (
+            patch("backend.api.routes._initialize_services"),
+            patch("backend.api.routes._document_service", mock_doc_service),
+        ):
+            async with AsyncClient(
+                transport=ASGITransport(app=app), base_url="http://test"
+            ) as client:
                 response = await client.get("/api/v1/documents")
 
         assert response.status_code == 200
@@ -167,11 +196,14 @@ class TestAPIDocuments:
         mock_doc_service = AsyncMock()
         mock_doc_service.delete_document = AsyncMock(return_value=True)
 
-        with patch("backend.api.routes._initialize_services"), \
-             patch("backend.api.routes._document_service", mock_doc_service), \
-             patch("backend.api.routes._indexing_service", AsyncMock()):
-
-            async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+        with (
+            patch("backend.api.routes._initialize_services"),
+            patch("backend.api.routes._document_service", mock_doc_service),
+            patch("backend.api.routes._indexing_service", AsyncMock()),
+        ):
+            async with AsyncClient(
+                transport=ASGITransport(app=app), base_url="http://test"
+            ) as client:
                 response = await client.delete("/api/v1/documents/test-id")
 
         assert response.status_code == 200
@@ -183,10 +215,13 @@ class TestAPIDocuments:
         mock_doc_service = AsyncMock()
         mock_doc_service.delete_document = AsyncMock(return_value=False)
 
-        with patch("backend.api.routes._initialize_services"), \
-             patch("backend.api.routes._document_service", mock_doc_service):
-
-            async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+        with (
+            patch("backend.api.routes._initialize_services"),
+            patch("backend.api.routes._document_service", mock_doc_service),
+        ):
+            async with AsyncClient(
+                transport=ASGITransport(app=app), base_url="http://test"
+            ) as client:
                 response = await client.delete("/api/v1/documents/non-existent")
 
         assert response.status_code == 200
@@ -195,7 +230,9 @@ class TestAPIDocuments:
 class TestAPIStrategies:
     @pytest.mark.asyncio
     async def test_list_strategies(self):
-        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+        async with AsyncClient(
+            transport=ASGITransport(app=app), base_url="http://test"
+        ) as client:
             response = await client.get("/api/v1/strategies")
 
         assert response.status_code == 200
@@ -211,7 +248,9 @@ class TestAPIStrategies:
 
     @pytest.mark.asyncio
     async def test_strategies_have_descriptions(self):
-        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+        async with AsyncClient(
+            transport=ASGITransport(app=app), base_url="http://test"
+        ) as client:
             response = await client.get("/api/v1/strategies")
 
         data = response.json()
@@ -235,10 +274,13 @@ class TestAPIAnalytics:
             }
         )
 
-        with patch("backend.api.routes._initialize_services"), \
-             patch("backend.api.routes._analytics_service", mock_analytics):
-
-            async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+        with (
+            patch("backend.api.routes._initialize_services"),
+            patch("backend.api.routes._analytics_service", mock_analytics),
+        ):
+            async with AsyncClient(
+                transport=ASGITransport(app=app), base_url="http://test"
+            ) as client:
                 response = await client.get("/api/v1/analytics")
 
         assert response.status_code == 200

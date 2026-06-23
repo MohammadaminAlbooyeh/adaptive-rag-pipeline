@@ -1,4 +1,4 @@
-from typing import Dict, Any, TypedDict, List
+from typing import Dict, Any, TypedDict
 from langgraph.graph import StateGraph, END
 from backend.adaptive_rag.retrievers.graph_retriever import GraphRetriever
 from backend.adaptive_rag.generator.answer_generator import AnswerGenerator
@@ -38,7 +38,7 @@ class GraphRAGWorkflow:
         words = query.split()
         entities = []
         for w in words:
-            cleaned = w.strip('.,!?;:()[]{}"\'')
+            cleaned = w.strip(".,!?;:()[]{}\"'")
             if len(cleaned) > 3 and (cleaned[0].isupper() or cleaned.isupper()):
                 entities.append(cleaned)
 
@@ -57,10 +57,12 @@ class GraphRAGWorkflow:
                 if isinstance(doc, dict):
                     relations.append(doc)
                 else:
-                    relations.append({
-                        "content": getattr(doc, "page_content", str(doc)),
-                        "source": "graph",
-                    })
+                    relations.append(
+                        {
+                            "content": getattr(doc, "page_content", str(doc)),
+                            "source": "graph",
+                        }
+                    )
 
         return {"relations": relations}
 
@@ -78,12 +80,14 @@ class GraphRAGWorkflow:
         return {"answer": answer}
 
     async def run(self, query: str) -> Dict[str, Any]:
-        result = await self.workflow.ainvoke({
-            "query": query,
-            "entities": [],
-            "relations": [],
-            "answer": "",
-        })
+        result = await self.workflow.ainvoke(
+            {
+                "query": query,
+                "entities": [],
+                "relations": [],
+                "answer": "",
+            }
+        )
         formatted = self.response_formatter.format(
             answer=result.get("answer", ""),
             sources=[r.get("source", "graph") for r in result.get("relations", [])],

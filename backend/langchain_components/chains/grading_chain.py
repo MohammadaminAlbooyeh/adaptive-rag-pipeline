@@ -1,9 +1,8 @@
-from langchain.chains import LLMChain
-
-
 class GradingChain:
     def __init__(self, llm, prompt):
-        self.chain = LLMChain(llm=llm, prompt=prompt)
+        self.chain = prompt | llm
 
     async def grade(self, document: str, query: str) -> dict:
-        return await self.chain.arun(document=document, query=query)
+        result = await self.chain.ainvoke({"document": document, "query": query})
+        text = result.content if hasattr(result, "content") else str(result)
+        return {"text": text}

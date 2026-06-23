@@ -14,7 +14,9 @@ class GraphRAGStrategy(BaseStrategy):
 
     async def execute(self, query: str, **kwargs) -> dict:
         try:
-            graph_results = await self.graph_retriever.retrieve(query, top_k=kwargs.get("top_k", 5))
+            graph_results = await self.graph_retriever.retrieve(
+                query, top_k=kwargs.get("top_k", 5)
+            )
 
             if not graph_results:
                 return {
@@ -32,7 +34,7 @@ class GraphRAGStrategy(BaseStrategy):
                 {
                     "content": result.get("content", "")[:100],
                     "source": result.get("source", "Graph"),
-                    "score": result.get("relevance_score", 0)
+                    "score": result.get("relevance_score", 0),
                 }
                 for result in graph_results
             ]

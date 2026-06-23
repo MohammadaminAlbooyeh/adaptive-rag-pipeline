@@ -57,7 +57,9 @@ class CorrectiveRAGWorkflow:
             result = await self.relevance_grader.grade(doc.get("content", ""), query)
             relevance_scores.append(result.get("score", 0.0))
 
-        avg_score = sum(relevance_scores) / len(relevance_scores) if relevance_scores else 0.0
+        avg_score = (
+            sum(relevance_scores) / len(relevance_scores) if relevance_scores else 0.0
+        )
         return {"grade": "correct" if avg_score < 0.5 else "generate"}
 
     async def _correct(self, state: CorrectiveRAGState) -> Dict[str, Any]:
@@ -73,18 +75,24 @@ class CorrectiveRAGWorkflow:
         documents = state.get("documents", [])
         all_docs = corrected_docs if corrected_docs else documents
         context = self.context_builder.build(all_docs)
-        answer = await self.answer_generator.generate(state["query"], context) if context else await self.llm.generate(f"Answer: {state['query']}")
+        answer = (
+            await self.answer_generator.generate(state["query"], context)
+            if context
+            else await self.llm.generate(f"Answer: {state['query']}")
+        )
         return {"answer": answer}
 
     def _decide(self, state: CorrectiveRAGState) -> str:
         return state.get("grade", "generate")
 
     async def run(self, query: str) -> Dict[str, Any]:
-        result = await self.workflow.ainvoke({
-            "query": query,
-            "documents": [],
-            "grade": "",
-            "corrected_docs": [],
-            "answer": "",
-        })
+        result = await self.workflow.ainvoke(
+            {
+                "query": query,
+                "documents": [],
+                "grade": "",
+                "corrected_docs": [],
+                "answer": "",
+            }
+        )
         return result

@@ -11,7 +11,9 @@ class WebRetriever(BaseRetriever):
     async def retrieve(self, query: str, top_k: int = 5) -> List[dict]:
         try:
             loop = asyncio.get_event_loop()
-            results = await loop.run_in_executor(None, self._sync_retrieve, query, top_k)
+            results = await loop.run_in_executor(
+                None, self._sync_retrieve, query, top_k
+            )
             return results
         except Exception as e:
             raise RuntimeError(f"Web retrieval failed: {str(e)}")
@@ -22,12 +24,14 @@ class WebRetriever(BaseRetriever):
             formatted_results = []
 
             for result in results:
-                formatted_results.append({
-                    "content": f"{result.get('body', '')}",
-                    "source": result.get("href", ""),
-                    "title": result.get("title", ""),
-                    "relevance_score": 0.8,
-                })
+                formatted_results.append(
+                    {
+                        "content": f"{result.get('body', '')}",
+                        "source": result.get("href", ""),
+                        "title": result.get("title", ""),
+                        "relevance_score": 0.8,
+                    }
+                )
 
             return formatted_results
         except Exception as e:

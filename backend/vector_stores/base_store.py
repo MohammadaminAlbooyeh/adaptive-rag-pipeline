@@ -8,5 +8,7 @@ class BaseVectorStore(ABC):
         pass
 
     @abstractmethod
-    async def similarity_search(self, query_embedding: list, top_k: int = 5) -> List[dict]:
+    async def similarity_search(
+        self, query_embedding: list, top_k: int = 5
+    ) -> List[dict]:
         pass

@@ -5,7 +5,9 @@ from unittest.mock import AsyncMock
 class TestAnswerGenerator:
     @pytest.mark.asyncio
     async def test_generate_returns_string(self, answer_generator):
-        result = await answer_generator.generate("What is Python?", "Python is a programming language.")
+        result = await answer_generator.generate(
+            "What is Python?", "Python is a programming language."
+        )
         assert isinstance(result, str)
         assert len(result) > 0
 
@@ -22,23 +24,31 @@ class TestAnswerGenerator:
         assert "Python is a language." in call_args
 
     @pytest.mark.asyncio
-    async def test_generate_with_sources_returns_dict(self, answer_generator, sample_documents):
+    async def test_generate_with_sources_returns_dict(
+        self, answer_generator, sample_documents
+    ):
         mock_llm = AsyncMock()
         mock_llm.generate = AsyncMock(return_value="Python is a programming language.")
         answer_generator.llm = mock_llm
 
-        result = await answer_generator.generate_with_sources("What is Python?", sample_documents)
+        result = await answer_generator.generate_with_sources(
+            "What is Python?", sample_documents
+        )
         assert isinstance(result, dict)
         assert "answer" in result
         assert "sources" in result
 
     @pytest.mark.asyncio
-    async def test_generate_with_sources_lists_sources(self, answer_generator, sample_documents):
+    async def test_generate_with_sources_lists_sources(
+        self, answer_generator, sample_documents
+    ):
         mock_llm = AsyncMock()
         mock_llm.generate = AsyncMock(return_value="Python is a programming language.")
         answer_generator.llm = mock_llm
 
-        result = await answer_generator.generate_with_sources("What is Python?", sample_documents)
+        result = await answer_generator.generate_with_sources(
+            "What is Python?", sample_documents
+        )
         assert len(result["sources"]) == len(sample_documents)
         assert result["sources"] == ["doc1.pdf", "doc2.pdf", "doc3.pdf"]
 
@@ -52,14 +62,18 @@ class TestAnswerGenerator:
         assert result == "Answer from LLM only."
 
     @pytest.mark.asyncio
-    async def test_build_context_numbered_documents(self, answer_generator, sample_documents):
+    async def test_build_context_numbered_documents(
+        self, answer_generator, sample_documents
+    ):
         context = answer_generator._build_context(sample_documents)
         assert "[1]" in context
         assert "[2]" in context
         assert "[3]" in context
 
     @pytest.mark.asyncio
-    async def test_build_context_includes_content(self, answer_generator, sample_documents):
+    async def test_build_context_includes_content(
+        self, answer_generator, sample_documents
+    ):
         context = answer_generator._build_context(sample_documents)
         assert "Python is a high-level programming language" in context
 

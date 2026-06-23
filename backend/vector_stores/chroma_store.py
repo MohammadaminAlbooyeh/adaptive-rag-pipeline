@@ -6,7 +6,9 @@ import asyncio
 
 
 class ChromaStore(BaseVectorStore):
-    def __init__(self, persist_directory: str = "./chromadb", collection_name: str = "documents"):
+    def __init__(
+        self, persist_directory: str = "./chromadb", collection_name: str = "documents"
+    ):
         self.persist_directory = persist_directory
         self.collection_name = collection_name
         self.embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
@@ -17,7 +19,7 @@ class ChromaStore(BaseVectorStore):
             self.vector_store = Chroma(
                 collection_name=self.collection_name,
                 embedding_function=self.embeddings,
-                persist_directory=self.persist_directory
+                persist_directory=self.persist_directory,
             )
         except Exception as e:
             raise RuntimeError(f"Failed to initialize Chroma: {str(e)}")
@@ -30,11 +32,11 @@ class ChromaStore(BaseVectorStore):
             raise RuntimeError(f"Failed to add documents to Chroma: {str(e)}")
 
     def _sync_add_documents(self, documents: List[dict]):
-        from langchain.schema import Document
+        from langchain_core.documents import Document
+
         docs = [
             Document(
-                page_content=doc.get("content", ""),
-                metadata=doc.get("metadata", {})
+                page_content=doc.get("content", ""), metadata=doc.get("metadata", {})
             )
             for doc in documents
         ]
@@ -43,7 +45,9 @@ class ChromaStore(BaseVectorStore):
     async def similarity_search(self, query: str, top_k: int = 5) -> List[dict]:
         try:
             loop = asyncio.get_event_loop()
-            results = await loop.run_in_executor(None, self._sync_similarity_search, query, top_k)
+            results = await loop.run_in_executor(
+                None, self._sync_similarity_search, query, top_k
+            )
             return results
         except Exception as e:
             raise RuntimeError(f"Similarity search failed: {str(e)}")
@@ -52,12 +56,16 @@ class ChromaStore(BaseVectorStore):
         results = self.vector_store.similarity_search_with_score(query, k=top_k)
         formatted_results = []
         for doc, score in results:
-            formatted_results.append({
-                "content": doc.page_content,
-                "metadata": doc.metadata,
-                "score": float(score),
-                "source": doc.metadata.get("source", "unknown") if doc.metadata else "unknown"
-            })
+            formatted_results.append(
+                {
+                    "content": doc.page_content,
+                    "metadata": doc.metadata,
+                    "score": float(score),
+                    "source": doc.metadata.get("source", "unknown")
+                    if doc.metadata
+                    else "unknown",
+                }
+            )
         return formatted_results
 
     async def delete_by_source(self, source: str):

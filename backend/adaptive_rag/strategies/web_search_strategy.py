@@ -1,5 +1,4 @@
 from backend.adaptive_rag.strategies.base_strategy import BaseStrategy
-import asyncio
 
 
 class WebSearchStrategy(BaseStrategy):
@@ -15,7 +14,9 @@ class WebSearchStrategy(BaseStrategy):
 
     async def execute(self, query: str, **kwargs) -> dict:
         try:
-            web_results = await self.web_retriever.retrieve(query, top_k=kwargs.get("top_k", 5))
+            web_results = await self.web_retriever.retrieve(
+                query, top_k=kwargs.get("top_k", 5)
+            )
 
             if not web_results:
                 return {
@@ -33,7 +34,7 @@ class WebSearchStrategy(BaseStrategy):
                 {
                     "content": result.get("content", ""),
                     "source": result.get("source", "Web"),
-                    "score": result.get("relevance_score", 0)
+                    "score": result.get("relevance_score", 0),
                 }
                 for result in web_results
             ]

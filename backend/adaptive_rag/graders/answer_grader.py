@@ -29,7 +29,10 @@ class AnswerGrader:
             score += 0.2
         if any(char in answer for char in ".!?"):
             score += 0.3
-        if any(word in answer.lower() for word in ["because", "therefore", "thus", "however"]):
+        if any(
+            word in answer.lower()
+            for word in ["because", "therefore", "thus", "however"]
+        ):
             score += 0.2
 
         return min(score, 1.0)

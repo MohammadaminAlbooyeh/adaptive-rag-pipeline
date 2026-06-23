@@ -13,7 +13,9 @@ class DirectLLMStrategy(BaseStrategy):
 
     async def execute(self, query: str, **kwargs) -> dict:
         try:
-            answer = await self.llm.generate(f"Answer the following question:\n\n{query}")
+            answer = await self.llm.generate(
+                f"Answer the following question:\n\n{query}"
+            )
             return {
                 "strategy": self.name(),
                 "query": query,

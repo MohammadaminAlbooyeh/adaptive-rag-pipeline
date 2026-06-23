@@ -28,15 +28,21 @@ class SelfRAGStrategy(BaseStrategy):
 
                 relevant_docs = []
                 for doc in docs:
-                    relevance = await self.relevance_grader.grade(doc["content"], current_query)
+                    relevance = await self.relevance_grader.grade(
+                        doc["content"], current_query
+                    )
                     if relevance["is_relevant"]:
                         relevant_docs.append(doc)
 
                 if relevant_docs:
                     context = "\n\n".join([d["content"] for d in relevant_docs])
-                    answer = await self.llm.generate_with_context(current_query, context)
+                    answer = await self.llm.generate_with_context(
+                        current_query, context
+                    )
 
-                    hallucination = await self.hallucination_grader.grade(answer, context)
+                    hallucination = await self.hallucination_grader.grade(
+                        answer, context
+                    )
                     if hallucination["is_grounded"]:
                         final_answer = answer
                         break
@@ -52,7 +58,7 @@ class SelfRAGStrategy(BaseStrategy):
                 {
                     "content": d.get("content", "")[:100],
                     "source": d.get("source", "Unknown"),
-                    "score": d.get("relevance_score", 0)
+                    "score": d.get("relevance_score", 0),
                 }
                 for d in all_documents[:5]
             ]

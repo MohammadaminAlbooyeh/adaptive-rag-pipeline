@@ -1,6 +1,10 @@
 class StrategySelector:
     def select(self, classification) -> str:
-        if not classification.needs_docs and not classification.needs_web and not classification.needs_graph:
+        if (
+            not classification.needs_docs
+            and not classification.needs_web
+            and not classification.needs_graph
+        ):
             return "direct_llm"
         if classification.needs_docs and not classification.needs_web:
             return "document_rag"

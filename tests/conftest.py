@@ -1,6 +1,5 @@
 import pytest
-from unittest.mock import AsyncMock, MagicMock, patch
-from typing import List
+from unittest.mock import AsyncMock, MagicMock
 
 
 @pytest.fixture
@@ -108,13 +107,28 @@ def mock_vector_store():
     mock = MagicMock()
     mock.similarity_search_with_score = MagicMock(
         return_value=[
-            (MagicMock(page_content="Python is a programming language.", metadata={"source": "doc.pdf"}), 0.95),
-            (MagicMock(page_content="Python supports OOP and functional programming.", metadata={"source": "doc.pdf"}), 0.87),
+            (
+                MagicMock(
+                    page_content="Python is a programming language.",
+                    metadata={"source": "doc.pdf"},
+                ),
+                0.95,
+            ),
+            (
+                MagicMock(
+                    page_content="Python supports OOP and functional programming.",
+                    metadata={"source": "doc.pdf"},
+                ),
+                0.87,
+            ),
         ]
     )
     mock.similarity_search = MagicMock(
         return_value=[
-            MagicMock(page_content="Python is a programming language.", metadata={"source": "doc.pdf"}),
+            MagicMock(
+                page_content="Python is a programming language.",
+                metadata={"source": "doc.pdf"},
+            ),
         ]
     )
     mock.add_documents = AsyncMock()
@@ -176,7 +190,11 @@ def mock_graph_retriever():
 def mock_relevance_grader():
     grader = AsyncMock()
     grader.grade = AsyncMock(
-        return_value={"score": 0.9, "is_relevant": True, "explanation": "Graded by mock"}
+        return_value={
+            "score": 0.9,
+            "is_relevant": True,
+            "explanation": "Graded by mock",
+        }
     )
     return grader
 
@@ -194,7 +212,11 @@ def mock_hallucination_grader():
 def mock_answer_grader():
     grader = AsyncMock()
     grader.grade = AsyncMock(
-        return_value={"quality_score": 0.85, "answers_query": True, "explanation": "Mock graded"}
+        return_value={
+            "quality_score": 0.85,
+            "answers_query": True,
+            "explanation": "Mock graded",
+        }
     )
     return grader
 
@@ -202,24 +224,28 @@ def mock_answer_grader():
 @pytest.fixture
 def query_classifier():
     from backend.adaptive_rag.router.query_classifier import QueryClassifier
+
     return QueryClassifier()
 
 
 @pytest.fixture
 def strategy_selector():
     from backend.adaptive_rag.router.strategy_selector import StrategySelector
+
     return StrategySelector()
 
 
 @pytest.fixture
 def confidence_scorer():
     from backend.adaptive_rag.router.confidence_scorer import ConfidenceScorer
+
     return ConfidenceScorer()
 
 
 @pytest.fixture
 def query_router():
     from backend.adaptive_rag.router.query_router import QueryRouter
+
     return QueryRouter()
 
 
@@ -243,11 +269,12 @@ def mock_strategy():
 @pytest.fixture
 def mock_strategies(mock_strategy, mock_retriever, mock_web_retriever, mock_llm):
     from backend.adaptive_rag.strategies.direct_llm_strategy import DirectLLMStrategy
-    from backend.adaptive_rag.strategies.document_rag_strategy import DocumentRAGStrategy
+    from backend.adaptive_rag.strategies.document_rag_strategy import (
+        DocumentRAGStrategy,
+    )
     from backend.adaptive_rag.strategies.web_search_strategy import WebSearchStrategy
     from backend.adaptive_rag.strategies.hybrid_strategy import HybridStrategy
     from backend.adaptive_rag.strategies.graph_rag_strategy import GraphRAGStrategy
-    from backend.adaptive_rag.strategies.self_rag_strategy import SelfRAGStrategy
 
     return {
         "direct_llm": DirectLLMStrategy(mock_llm),
@@ -261,22 +288,26 @@ def mock_strategies(mock_strategy, mock_retriever, mock_web_retriever, mock_llm)
 @pytest.fixture
 def adaptive_rag_service(mock_strategies):
     from backend.services.adaptive_rag_service import AdaptiveRAGService
+
     return AdaptiveRAGService(mock_strategies)
 
 
 @pytest.fixture
 def answer_generator(mock_llm):
     from backend.adaptive_rag.generator.answer_generator import AnswerGenerator
+
     return AnswerGenerator(mock_llm)
 
 
 @pytest.fixture
 def context_builder():
     from backend.adaptive_rag.generator.context_builder import ContextBuilder
+
     return ContextBuilder()
 
 
 @pytest.fixture
 def response_formatter():
     from backend.adaptive_rag.generator.response_formatter import ResponseFormatter
+
     return ResponseFormatter()

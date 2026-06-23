@@ -1,11 +1,12 @@
 import pytest
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
 
 class TestQueryRouter:
     @pytest.fixture
     def router(self):
         from backend.adaptive_rag.router.query_router import QueryRouter
+
         r = QueryRouter()
         r.scorer = MagicMock()
         r.scorer.score.return_value = 0.85

@@ -14,7 +14,7 @@ class DocumentService:
             "filename": filename,
             "uploaded_at": datetime.now().isoformat(),
             "size": len(content),
-            "status": "uploaded"
+            "status": "uploaded",
         }
         return self.documents[doc_id]
 

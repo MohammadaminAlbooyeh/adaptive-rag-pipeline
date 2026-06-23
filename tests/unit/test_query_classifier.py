@@ -1,4 +1,3 @@
-import pytest
 from backend.adaptive_rag.router.query_classifier import ClassificationResult
 
 
@@ -78,7 +77,9 @@ class TestQueryClassifier:
         assert result.complexity == "complex"
 
     def test_complexity_complex_by_conjunctions(self, query_classifier):
-        result = query_classifier.classify("Compare Python and Java and JavaScript and C++ and Go")
+        result = query_classifier.classify(
+            "Compare Python and Java and JavaScript and C++ and Go"
+        )
         assert result.complexity == "complex"
 
     def test_time_sensitive_flag(self, query_classifier):
@@ -88,7 +89,16 @@ class TestQueryClassifier:
         assert result.needs_docs is False
 
     def test_time_sensitive_keywords(self, query_classifier):
-        for kw in ["today", "yesterday", "latest", "recent", "now", "current", "breaking", "news"]:
+        for kw in [
+            "today",
+            "yesterday",
+            "latest",
+            "recent",
+            "now",
+            "current",
+            "breaking",
+            "news",
+        ]:
             result = query_classifier.classify(f"What is the {kw} update")
             assert result.is_time_sensitive is True, f"Failed for keyword '{kw}'"
             assert result.needs_web is True, f"Failed for keyword '{kw}'"
@@ -108,7 +118,9 @@ class TestQueryClassifier:
         assert result.needs_web is False
 
     def test_mixed_flags(self, query_classifier):
-        result = query_classifier.classify("Latest relationships between entities in AI research")
+        result = query_classifier.classify(
+            "Latest relationships between entities in AI research"
+        )
         assert result.needs_web is True
         assert result.needs_graph is True
         assert result.is_time_sensitive is True

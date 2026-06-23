@@ -1,5 +1,5 @@
 import pytest
-from unittest.mock import MagicMock, AsyncMock, patch
+from unittest.mock import MagicMock, patch
 
 
 class TestVectorRetriever:
@@ -60,7 +60,9 @@ class TestVectorRetriever:
         from backend.adaptive_rag.retrievers.vector_retriever import VectorRetriever
 
         store = MagicMock()
-        store.similarity_search_with_score = MagicMock(side_effect=Exception("Search failed"))
+        store.similarity_search_with_score = MagicMock(
+            side_effect=Exception("Search failed")
+        )
         retriever = VectorRetriever(store)
         with pytest.raises(RuntimeError, match="Vector retrieval failed"):
             await retriever.retrieve("What is Python?")
@@ -72,7 +74,11 @@ class TestWebRetriever:
         from backend.adaptive_rag.retrievers.web_retriever import WebRetriever
 
         mock_results = [
-            {"body": "Python is popular.", "href": "https://example.com", "title": "Python"}
+            {
+                "body": "Python is popular.",
+                "href": "https://example.com",
+                "title": "Python",
+            }
         ]
 
         with patch("backend.adaptive_rag.retrievers.web_retriever.DDGS") as mock_ddgs:
@@ -95,7 +101,14 @@ class TestWebRetriever:
     async def test_retrieve_respects_top_k(self):
         from backend.adaptive_rag.retrievers.web_retriever import WebRetriever
 
-        mock_results = [{"body": f"Result {i}", "href": f"https://example.com/{i}", "title": f"Title {i}"} for i in range(3)]
+        mock_results = [
+            {
+                "body": f"Result {i}",
+                "href": f"https://example.com/{i}",
+                "title": f"Title {i}",
+            }
+            for i in range(3)
+        ]
 
         with patch("backend.adaptive_rag.retrievers.web_retriever.DDGS") as mock_ddgs:
             mock_instance = MagicMock()
@@ -204,7 +217,9 @@ class TestEnsembleRetriever:
     async def test_initializes_with_custom_weights(self, mock_retriever):
         from backend.adaptive_rag.retrievers.ensemble_retriever import EnsembleRetriever
 
-        retriever = EnsembleRetriever([mock_retriever, mock_retriever], weights=[0.7, 0.3])
+        retriever = EnsembleRetriever(
+            [mock_retriever, mock_retriever], weights=[0.7, 0.3]
+        )
         assert retriever.weights == [0.7, 0.3]
 
 

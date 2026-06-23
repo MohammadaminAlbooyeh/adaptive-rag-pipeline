@@ -25,7 +25,7 @@ class IndexingService:
                         "source": filename,
                         "doc_id": doc_id,
                         "chunk_index": i,
-                    }
+                    },
                 }
                 for i, chunk in enumerate(chunks)
             ]
@@ -37,20 +37,20 @@ class IndexingService:
 
     def _extract_chunks(self, filename: str, content: bytes) -> list:
         try:
-            if filename.endswith('.pdf'):
+            if filename.endswith(".pdf"):
                 loader = PDFLoader()
                 text = loader.load(io.BytesIO(content))
-            elif filename.endswith('.txt'):
+            elif filename.endswith(".txt"):
                 loader = TXTLoader()
                 text = loader.load(io.BytesIO(content))
-            elif filename.endswith('.csv'):
+            elif filename.endswith(".csv"):
                 loader = CSVLoader()
                 text = loader.load(io.BytesIO(content))
-            elif filename.endswith('.docx'):
+            elif filename.endswith(".docx"):
                 loader = DOCXLoader()
                 text = loader.load(io.BytesIO(content))
             else:
-                text = content.decode('utf-8', errors='ignore')
+                text = content.decode("utf-8", errors="ignore")
 
             return self._chunk_text(text)
         except Exception as e:

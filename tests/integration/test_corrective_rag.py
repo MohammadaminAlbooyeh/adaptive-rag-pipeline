@@ -1,11 +1,13 @@
 import pytest
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock
 
 
 class TestCorrectiveRAGWorkflow:
     @pytest.mark.asyncio
     async def test_workflow_initializes(self, mock_llm, mock_vector_store):
-        from backend.adaptive_rag.langgraph_workflows.corrective_rag_workflow import CorrectiveRAGWorkflow
+        from backend.adaptive_rag.langgraph_workflows.corrective_rag_workflow import (
+            CorrectiveRAGWorkflow,
+        )
 
         workflow = CorrectiveRAGWorkflow(mock_llm, mock_vector_store)
         assert workflow.llm is mock_llm
@@ -15,21 +17,33 @@ class TestCorrectiveRAGWorkflow:
 
     @pytest.mark.asyncio
     async def test_retrieve_node_returns_docs(self, mock_llm, mock_vector_store):
-        from backend.adaptive_rag.langgraph_workflows.corrective_rag_workflow import CorrectiveRAGWorkflow
+        from backend.adaptive_rag.langgraph_workflows.corrective_rag_workflow import (
+            CorrectiveRAGWorkflow,
+        )
 
         workflow = CorrectiveRAGWorkflow(mock_llm, mock_vector_store)
         workflow.vector_retriever.retrieve = AsyncMock(
             return_value=[{"content": "Python is a language.", "source": "doc.pdf"}]
         )
 
-        state = {"query": "What is Python?", "documents": [], "grade": "", "corrected_docs": [], "answer": ""}
+        state = {
+            "query": "What is Python?",
+            "documents": [],
+            "grade": "",
+            "corrected_docs": [],
+            "answer": "",
+        }
         result = await workflow._retrieve(state)
         assert "documents" in result
         assert len(result["documents"]) > 0
 
     @pytest.mark.asyncio
-    async def test_grade_node_returns_correct_when_low_relevance(self, mock_llm, mock_vector_store):
-        from backend.adaptive_rag.langgraph_workflows.corrective_rag_workflow import CorrectiveRAGWorkflow
+    async def test_grade_node_returns_correct_when_low_relevance(
+        self, mock_llm, mock_vector_store
+    ):
+        from backend.adaptive_rag.langgraph_workflows.corrective_rag_workflow import (
+            CorrectiveRAGWorkflow,
+        )
 
         workflow = CorrectiveRAGWorkflow(mock_llm, mock_vector_store)
         workflow.relevance_grader.grade = AsyncMock(
@@ -47,8 +61,12 @@ class TestCorrectiveRAGWorkflow:
         assert result["grade"] == "correct"
 
     @pytest.mark.asyncio
-    async def test_grade_node_returns_generate_when_high_relevance(self, mock_llm, mock_vector_store):
-        from backend.adaptive_rag.langgraph_workflows.corrective_rag_workflow import CorrectiveRAGWorkflow
+    async def test_grade_node_returns_generate_when_high_relevance(
+        self, mock_llm, mock_vector_store
+    ):
+        from backend.adaptive_rag.langgraph_workflows.corrective_rag_workflow import (
+            CorrectiveRAGWorkflow,
+        )
 
         workflow = CorrectiveRAGWorkflow(mock_llm, mock_vector_store)
         workflow.relevance_grader.grade = AsyncMock(
@@ -66,22 +84,37 @@ class TestCorrectiveRAGWorkflow:
         assert result["grade"] == "generate"
 
     @pytest.mark.asyncio
-    async def test_grade_node_returns_correct_when_empty_docs(self, mock_llm, mock_vector_store):
-        from backend.adaptive_rag.langgraph_workflows.corrective_rag_workflow import CorrectiveRAGWorkflow
+    async def test_grade_node_returns_correct_when_empty_docs(
+        self, mock_llm, mock_vector_store
+    ):
+        from backend.adaptive_rag.langgraph_workflows.corrective_rag_workflow import (
+            CorrectiveRAGWorkflow,
+        )
 
         workflow = CorrectiveRAGWorkflow(mock_llm, mock_vector_store)
-        state = {"query": "What is Python?", "documents": [], "grade": "", "corrected_docs": [], "answer": ""}
+        state = {
+            "query": "What is Python?",
+            "documents": [],
+            "grade": "",
+            "corrected_docs": [],
+            "answer": "",
+        }
         result = await workflow._grade(state)
         assert result["grade"] == "correct"
 
     @pytest.mark.asyncio
     async def test_correct_node_adds_web_results(self, mock_llm, mock_vector_store):
-        from backend.adaptive_rag.langgraph_workflows.corrective_rag_workflow import CorrectiveRAGWorkflow
+        from backend.adaptive_rag.langgraph_workflows.corrective_rag_workflow import (
+            CorrectiveRAGWorkflow,
+        )
 
         workflow = CorrectiveRAGWorkflow(mock_llm, mock_vector_store)
         workflow.web_retriever.retrieve = AsyncMock(
             return_value=[
-                {"content": "Python is popular on the web.", "source": "https://example.com"}
+                {
+                    "content": "Python is popular on the web.",
+                    "source": "https://example.com",
+                }
             ]
         )
 
@@ -98,13 +131,13 @@ class TestCorrectiveRAGWorkflow:
 
     @pytest.mark.asyncio
     async def test_correct_node_deduplicates_sources(self, mock_llm, mock_vector_store):
-        from backend.adaptive_rag.langgraph_workflows.corrective_rag_workflow import CorrectiveRAGWorkflow
+        from backend.adaptive_rag.langgraph_workflows.corrective_rag_workflow import (
+            CorrectiveRAGWorkflow,
+        )
 
         workflow = CorrectiveRAGWorkflow(mock_llm, mock_vector_store)
         workflow.web_retriever.retrieve = AsyncMock(
-            return_value=[
-                {"content": "Web result", "source": "doc.pdf"}
-            ]
+            return_value=[{"content": "Web result", "source": "doc.pdf"}]
         )
 
         state = {
@@ -120,7 +153,9 @@ class TestCorrectiveRAGWorkflow:
 
     @pytest.mark.asyncio
     async def test_generate_node_with_corrected_docs(self, mock_llm, mock_vector_store):
-        from backend.adaptive_rag.langgraph_workflows.corrective_rag_workflow import CorrectiveRAGWorkflow
+        from backend.adaptive_rag.langgraph_workflows.corrective_rag_workflow import (
+            CorrectiveRAGWorkflow,
+        )
 
         workflow = CorrectiveRAGWorkflow(mock_llm, mock_vector_store)
         mock_llm.generate = AsyncMock(return_value="Python is a programming language.")
@@ -128,7 +163,9 @@ class TestCorrectiveRAGWorkflow:
         state = {
             "query": "What is Python?",
             "documents": [{"content": "Python is a language.", "source": "doc.pdf"}],
-            "corrected_docs": [{"content": "Python is widely used.", "source": "doc.pdf"}],
+            "corrected_docs": [
+                {"content": "Python is widely used.", "source": "doc.pdf"}
+            ],
             "grade": "correct",
             "answer": "",
         }
@@ -138,7 +175,9 @@ class TestCorrectiveRAGWorkflow:
 
     @pytest.mark.asyncio
     async def test_generate_node_without_context(self, mock_llm, mock_vector_store):
-        from backend.adaptive_rag.langgraph_workflows.corrective_rag_workflow import CorrectiveRAGWorkflow
+        from backend.adaptive_rag.langgraph_workflows.corrective_rag_workflow import (
+            CorrectiveRAGWorkflow,
+        )
 
         workflow = CorrectiveRAGWorkflow(mock_llm, mock_vector_store)
         mock_llm.generate = AsyncMock(return_value="Direct LLM answer.")
@@ -154,7 +193,9 @@ class TestCorrectiveRAGWorkflow:
         assert result["answer"] == "Direct LLM answer."
 
     def test_decide_returns_state_grade(self, mock_llm, mock_vector_store):
-        from backend.adaptive_rag.langgraph_workflows.corrective_rag_workflow import CorrectiveRAGWorkflow
+        from backend.adaptive_rag.langgraph_workflows.corrective_rag_workflow import (
+            CorrectiveRAGWorkflow,
+        )
 
         workflow = CorrectiveRAGWorkflow(mock_llm, mock_vector_store)
         assert workflow._decide({"grade": "generate"}) == "generate"
@@ -163,7 +204,9 @@ class TestCorrectiveRAGWorkflow:
 
     @pytest.mark.asyncio
     async def test_run_returns_result_dict(self, mock_llm, mock_vector_store):
-        from backend.adaptive_rag.langgraph_workflows.corrective_rag_workflow import CorrectiveRAGWorkflow
+        from backend.adaptive_rag.langgraph_workflows.corrective_rag_workflow import (
+            CorrectiveRAGWorkflow,
+        )
 
         workflow = CorrectiveRAGWorkflow(mock_llm, mock_vector_store)
         workflow.workflow.ainvoke = AsyncMock(

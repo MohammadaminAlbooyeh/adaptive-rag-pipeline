@@ -30,7 +30,13 @@ _analytics_service = None
 
 
 def _initialize_services():
-    global _llm, _vector_store, _rag_service, _document_service, _indexing_service, _analytics_service
+    global \
+        _llm, \
+        _vector_store, \
+        _rag_service, \
+        _document_service, \
+        _indexing_service, \
+        _analytics_service
 
     if _rag_service is not None:
         return
@@ -51,7 +57,9 @@ def _initialize_services():
         "web_search_rag": WebSearchStrategy(web_retriever, _llm),
         "hybrid_rag": HybridStrategy(vector_retriever, web_retriever, _llm),
         "graph_rag": GraphRAGStrategy(graph_retriever, _llm),
-        "self_rag": SelfRAGStrategy(vector_retriever, _llm, relevance_grader, hallucination_grader),
+        "self_rag": SelfRAGStrategy(
+            vector_retriever, _llm, relevance_grader, hallucination_grader
+        ),
     }
 
     _rag_service = AdaptiveRAGService(strategies)
@@ -97,9 +105,7 @@ async def upload_document(file: UploadFile = File(...)):
         await _indexing_service.index_document(result["id"], file.filename, content)
 
         return DocumentUploadResponse(
-            id=result["id"],
-            filename=file.filename,
-            status="indexed"
+            id=result["id"], filename=file.filename, status="indexed"
         )
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

@@ -1,9 +1,7 @@
-from langchain.chains import LLMChain
-
-
 class RAGChain:
     def __init__(self, llm, prompt):
-        self.chain = LLMChain(llm=llm, prompt=prompt)
+        self.chain = prompt | llm
 
     async def run(self, query: str, context: str) -> str:
-        return await self.chain.arun(query=query, context=context)
+        result = await self.chain.ainvoke({"query": query, "context": context})
+        return result.content if hasattr(result, "content") else str(result)
